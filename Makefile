@@ -41,12 +41,12 @@ DEF_FLAGS = $(patsubst %,-D%,$(PROTOCALLS))
 # 	|	|	|
 # 	V	V	V
 
-all: main game
+all: main #game
 
-EXECUTABLES = main game
+EXECUTABLES = main #game
 
 MAIN_INCLUDES  = main.o board.o
-GAME_INCLUDES  = game.o board.o
+#GAME_INCLUDES  = game.o board.o
 
 main: $(MAIN_INCLUDES)
 	$(CC) $(LDFLAGS) -o $@ $^ $(LDLIBS) $(RM_OBJS) 
