@@ -5,9 +5,9 @@
 
 
 
+#include "board.h"
 #include <string>
 #include <iostream>
-#include "board.h"
 
 using namespace std;
 
@@ -20,15 +20,14 @@ int loop_on_input();
 
 int main (int argc, char **argv)
 {
-             
+    return loop_on_input();
 }
 
 
 int loop_on_input()
 {
-    
-
-
+    Board board(4,4,2);
+    cout << board << endl;
 }
 
 
