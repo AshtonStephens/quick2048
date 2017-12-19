@@ -34,6 +34,7 @@ public:
 
     bool addRandom (); 
     void reset_board();
+    void set_power(int pwr);
     friend std::ostream & operator << 
         (std::ostream &o, const Board& brd);
 private:
@@ -42,7 +43,8 @@ private:
     struct block {
         block() : power_(2), value_(0), lock_(false) {};
         const int operator = (int assign);
-        bool moveto (block &blk, bool &moved);
+        const int operator = (const block &b);
+        bool moveto (block &blk, bool &moved, int &score_);
         int power_;
         int value_;
         int lock_ ;
@@ -51,8 +53,7 @@ private:
     };
     friend std::ostream & operator <<
            (std::ostream &o, const block& blk);
-    void set_power(int pwr);
-    int height_, width_, power_;
+    int height_, width_, power_, score_;
     block **board_; 
 };
 

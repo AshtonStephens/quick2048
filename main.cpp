@@ -29,13 +29,15 @@ int loop_on_input()
 {
     char temp;
     bool changes = true;
-    Board board(5,5,2);
+    Board board(4,4,2);
     // loop on reading in and then printing
     
     
     
     temp = instant_read();
+    cout << "\033[s";
     board.addRandom();
+    cout << "\033[6B";
     cout << board;
     while (temp != 'q') {
         // 
@@ -57,12 +59,17 @@ int loop_on_input()
                 break; 
         }
 
+        if (temp >= '0' && temp <= '9') {
+            board.set_power(temp - '0');
+            cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"<<endl;
+            cout << board;
+        }
+
         if (changes) {
+            
             if(!board.addRandom()) {
-                // GAME OVER
                 exit(EXIT_FAILURE);
             }
-
             cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"<<endl;
             cout << board;
         }

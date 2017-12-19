@@ -19,7 +19,14 @@
  * BOARD
  * -------------------------------------------------- */
 
-#define MAX_POWERS 2
+
+int pads(int num);
+
+template <int N>
+int chooseRandom(const int (&t)[N])
+{ return t[rand() % N]; }
+const int probs[] = {1,1,1,1,1,1,1,1,1,2};
+
 
 Board::~Board()
 {
@@ -30,14 +37,13 @@ Board::~Board()
 
 bool Board::move_up   ()
 {
-    // wid hei
     int row;
     bool moved = false;
     reset_locks();
     for (int col  = 0; col  < width_ ; ++col)
     for (int wave = 0; wave < height_; ++wave) {
         row = wave;
-        while (board_[col+1][row+1].moveto(board_[col+1][row],moved)) {
+        while (board_[col+1][row+1].moveto(board_[col+1][row],moved,score_)) {
             --row;
         } 
     }
@@ -52,7 +58,7 @@ bool Board::move_down ()
     for (int col  = 0; col < width_; ++col)
     for (int wave = height_-1; wave >= 0; --wave) {
         row = wave;
-        while (board_[col+1][row+1].moveto(board_[col+1][row+2],moved)) {
+        while (board_[col+1][row+1].moveto(board_[col+1][row+2],moved,score_)) {
             ++row;
         } 
     }
@@ -67,7 +73,7 @@ bool Board::move_left ()
     for (int row  = 0; row  < height_; ++row)
     for (int wave = 0; wave < width_; ++wave) {
         col = wave;
-        while (board_[col+1][row+1].moveto(board_[col][row+1],moved)) {
+        while (board_[col+1][row+1].moveto(board_[col][row+1],moved,score_)) {
             --col;
         } 
     }
@@ -82,7 +88,7 @@ bool Board::move_right()
     for (int row  = 0; row < height_; ++row)
     for (int wave = width_-1; wave >= 0; wave--) {
         col = wave;
-        while (board_[col+1][row+1].moveto(board_[col+2][row+1],moved)) {
+        while (board_[col+1][row+1].moveto(board_[col+2][row+1],moved,score_)) {
             ++col;
         } 
     }
@@ -99,6 +105,7 @@ void Board::reset_locks()
 std::ostream & operator << 
 (std::ostream &o, const Board& brd)
 {
+    o << "\033[" << brd.height_ + 1 << "A";
     for (int j = 0; j < brd.height_; ++j) {
         for (int i = 0; i < brd.width_; ++i) 
             o << brd.board_[i+1][j+1];
@@ -109,8 +116,6 @@ std::ostream & operator <<
 
 bool Board::addRandom ()
 {
-    //std::cout << "ERROR NOT IMPEMENTED ADD RANDOM\n" << std::endl;
-    
     int num_empty = count_empty();
     int rand_choice, col, row;
 
@@ -118,16 +123,12 @@ bool Board::addRandom ()
        return false; 
     } else {
         rand_choice = rand() % num_empty;
-        
-      //  std::cerr << "rand_choice = " << rand_choice << std::endl;
-
         for (col = 0; col < width_; ++col)
             for (row = 0; row < height_; ++row)
                 if (board_[col+1][row+1].value_ == 0)
                 if (rand_choice-- == 0) 
-                    board_[col+1][row+1] = rand() % MAX_POWERS + 1; 
-       // std::cout << *this;
-        return true; 
+                    board_[col+1][row+1] = chooseRandom(probs);
+         return true; 
     }
 }
 
@@ -178,17 +179,20 @@ const int Board::block::operator = (int assign)
     return value_ = assign;
 }
 
-bool Board::block::moveto (block &blk, bool &moved)
+bool Board::block::moveto (block &blk, bool &moved, int &score)
 {
     if (value_ == 0 || blk.lock_ ||
         blk.value_ == SIDE_BLOCK) {
+        // doing nothing to the block
         return false;
     } else if (blk.value_ == 0) {
+        // moving a block over
         blk.value_  = value_;
         value_      = 0;
         moved       = true;
         return true;
     } else if (blk.value_ == value_) {
+        // Combining two blocks
         blk.lock_   = true;
         blk.value_ += 1;
         value_      = 0;
@@ -213,8 +217,6 @@ int pads(int num)
 std::ostream & operator <<
 (std::ostream &o, const Board::block& blk)
 {
-    (void) o;
-    (void) blk;
     int pwr = 1;
     int padding, i;
 
@@ -226,7 +228,7 @@ std::ostream & operator <<
     if (blk.value_ == 0) {
         o << "\033[40;7;10m" << "--X--" << "\033[0m";
     } else {
-        o << "\033["<< (blk.value_%6 + 31) << ";7";
+        o << "\033["<< ((blk.value_-1)%6 + 31) << ";7";
         if (((blk.value_)/7 )%2 == 1) o << ";2";
         if (((blk.value_)/14)%2 == 1) o << ";1";
         o << "m";
@@ -235,14 +237,4 @@ std::ostream & operator <<
     } 
     return o;
 }
-
-
-
-
-
-
-
-
-
-
 
