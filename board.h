@@ -1,8 +1,8 @@
 /* 
  * board.h
  *
- * headerfile for the board data abstraction for implementing
- * 2048 game board. 
+ * headerfile for the board data abstraction 
+ * for implementing 2048 game.
  *
  * By: Ashton Stephens
  * Date: 12/18/17
@@ -34,14 +34,15 @@ private:
         ~block();
         const int operator = (int assign);
         bool moveto (block &blk);
-        friend std::ostream & operator <<
-           (std::ostream &o, const block& blk);
-
         int value_;
         int lock_ ;
+    friend std::ostream & operator <<
+           (std::ostream &o, const block& blk);
+        private:
     };
+    friend std::ostream & operator <<
+           (std::ostream &o, const block& blk);
     block *board_; 
-}
-
+};
 
 #endif
