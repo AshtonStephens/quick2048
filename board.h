@@ -15,10 +15,17 @@
 #include <iostream>
 #include <string>
 
+#define SIDE_BLOCK -1
+
 class Board {
 public:
 
-    Board(int x, int y, int val);
+    Board(int x, int y, int val) : 
+        height_(x), width_(y), value_(val), board_(NULL) {
+            reset_board();
+            set_value(val); 
+        };
+
     ~Board();
 
     bool move_up   ();
@@ -26,14 +33,16 @@ public:
     bool move_left ();
     bool move_right();
 
+    bool addRandom (); 
+    void reset_board();
     friend std::ostream & operator << 
         (std::ostream &o, const Board& brd);
 private:
     struct block {
-        block();
-        ~block();
+        block() : power_(2), value_(0), lock_(false) {};
         const int operator = (int assign);
         bool moveto (block &blk);
+        int power_;
         int value_;
         int lock_ ;
     friend std::ostream & operator <<
@@ -42,7 +51,9 @@ private:
     };
     friend std::ostream & operator <<
            (std::ostream &o, const block& blk);
-    block *board_; 
+    void set_value(int val);
+    int height_, width_, value_;
+    block **board_; 
 };
 
 #endif

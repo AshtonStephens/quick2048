@@ -9,10 +9,10 @@
 
 using namespace std;
 
-static int LEFT_TRIGGER    = 'a';
-static int RIGHT_TRIGGER   = 'd';
-static int UP_TRIGGER      = 'w';
-static int DOWN_TRIGGER    = 's';
+static const char LEFT_TRIGGER    = 'a';
+static const char RIGHT_TRIGGER   = 'd';
+static const char UP_TRIGGER      = 'w';
+static const char DOWN_TRIGGER    = 's';
 
 void reset_read ();
 int loop_on_input();
@@ -27,6 +27,7 @@ int main (int argc, char **argv)
 int loop_on_input()
 {
     char temp;
+    bool changes = true;
     Board board(4,4,2);
     setup_instant_read();
     // loop on reading in and then printing
@@ -34,23 +35,28 @@ int loop_on_input()
     while (temp != 'q') {
         switch (temp) {
             case LEFT_TRIGGER:
-                cout << "left";
+                changes = board.move_left();
                 break;
             case RIGHT_TRIGGER:
-                cout << "rightt";
+                changes = board.move_right();
                 break;       
             case UP_TRIGGER:
-                cout << "up";
+                changes = board.move_up();
                 break;
             case DOWN_TRIGGER:
-                cout << "down";
+                changes = board.move_down();
                 break;
-        
-        } 
-        cout << board;
-         
-        
-        
+            default:
+                changes = false;
+                break; 
+        }
+        if (changes) {
+            cout << board;
+            if(!board.addRandom()) {
+                // GAME OVER
+                exit(EXIT_FAILURE);
+            }
+        }
         temp = fgetc(stdin);
     }
     reset_read ();
