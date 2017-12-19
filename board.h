@@ -20,11 +20,10 @@
 class Board {
 public:
 
-    Board(int x, int y, int val) : 
-        height_(x), width_(y), value_(val), board_(NULL) {
+    Board(int x, int y, int pwr) : 
+        height_(x), width_(y), power_(pwr), board_(NULL) {
             reset_board();
-            set_value(val); 
-        };
+            set_power(pwr);};
 
     ~Board();
 
@@ -38,22 +37,24 @@ public:
     friend std::ostream & operator << 
         (std::ostream &o, const Board& brd);
 private:
+    int  count_empty();
+    void reset_locks();
     struct block {
         block() : power_(2), value_(0), lock_(false) {};
         const int operator = (int assign);
-        bool moveto (block &blk);
+        bool moveto (block &blk, bool &moved);
         int power_;
         int value_;
         int lock_ ;
-    friend std::ostream & operator <<
+        friend std::ostream & operator <<
            (std::ostream &o, const block& blk);
-        private:
     };
     friend std::ostream & operator <<
            (std::ostream &o, const block& blk);
-    void set_value(int val);
-    int height_, width_, value_;
+    void set_power(int pwr);
+    int height_, width_, power_;
     block **board_; 
 };
 
 #endif
+
