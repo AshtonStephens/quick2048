@@ -24,7 +24,6 @@ int main (int argc, char **argv)
     return loop_on_input();
 }
 
-
 int loop_on_input()
 {
     char temp;
@@ -65,8 +64,24 @@ int loop_on_input()
             cout << board;
         }
 
+        // TODO:: DEBUG!!!
+        static int DEBUG_COUNTER = 0;
+        // TODO:: DEBUG!!!
+
         if (changes) {
+        
+            /* TODO:: DEBUG!!!
             
+            if (DEBUG_COUNTER++ == 5) {
+                Board a(5,2,2); 
+                a += board;
+                board = a;
+            }
+            TODO:: DEBUG!!!
+            */ 
+
+    
+
             if(!board.addRandom()) {
                 exit(EXIT_FAILURE);
             }
