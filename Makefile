@@ -45,7 +45,7 @@ all: main #game
 
 EXECUTABLES = main #game
 
-MAIN_INCLUDES  = main.o board.o
+MAIN_INCLUDES  = main.o score.o board.o  game.o
 #GAME_INCLUDES  = game.o board.o
 
 main: $(MAIN_INCLUDES)

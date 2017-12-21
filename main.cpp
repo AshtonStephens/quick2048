@@ -1,6 +1,6 @@
 
 #include <stdlib.h>
-#include "board.h"
+#include "game.h"
 #include <string>
 #include <iostream>
 #include <stdio.h>
@@ -28,30 +28,27 @@ int loop_on_input()
 {
     char temp;
     bool changes = true;
-    Board board(4,4,2);
+    Game game(4,4,2);
     // loop on reading in and then printing
     
-    
-    
-    temp = instant_read();
-    cout << "\033[s";
-    board.addRandom();
     cout << "\033[6B";
-    cout << board;
+    game.addRandom();
+    cout << game;
+    temp = instant_read();
     while (temp != 'q') {
         // 
         switch (temp) {
             case LEFT_TRIGGER:
-                changes = board.move_left();
+                changes = game.move_left();
                 break;
             case RIGHT_TRIGGER:
-                changes = board.move_right();
+                changes = game.move_right();
                 break;       
             case UP_TRIGGER:
-                changes = board.move_up();
+                changes = game.move_up();
                 break;
             case DOWN_TRIGGER:
-                changes = board.move_down();
+                changes = game.move_down();
                 break;
             default:
                 changes = false;
@@ -59,34 +56,16 @@ int loop_on_input()
         }
 
         if (temp >= '0' && temp <= '9') {
-            board.set_power(temp - '0');
-            cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"<<endl;
-            cout << board;
+            game.set_power(temp - '0');
+            cout << game;
         }
-
-        // TODO:: DEBUG!!!
-        static int DEBUG_COUNTER = 0;
-        // TODO:: DEBUG!!!
 
         if (changes) {
         
-            /* TODO:: DEBUG!!!
-            
-            if (DEBUG_COUNTER++ == 5) {
-                Board a(5,2,2); 
-                a += board;
-                board = a;
-            }
-            TODO:: DEBUG!!!
-            */ 
+            game.addRandom();
+            cout << game;
+            if (game.over()) exit(EXIT_SUCCESS); 
 
-    
-
-            if(!board.addRandom()) {
-                exit(EXIT_FAILURE);
-            }
-            cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"<<endl;
-            cout << board;
         }
         temp = instant_read();
     }

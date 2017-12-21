@@ -25,20 +25,17 @@
 
 int deci_leng(int num);
 int power_op (const int val, const int pow);
-
-template <int N>
-int chooseRandom(const int (&t)[N])
-{ return t[rand() % N]; }
-const int probs[] = {1,1,1,1,1,1,1,1,1,2};
-
 Board::Board (int w, int h, int pwr)
 {
     width_  = w;
     height_ = h;
     board_  = allocate_board (w,h);
     initialize_edges(board_,w,h);
-    DBGP;
-    set_power(pwr); 
+    min_block_width_ = 5;
+    set_block_width(5);
+    set_value  (0); 
+    set_lock   (false);
+    set_power  (pwr);
 }
 
 // ALLOCATE
@@ -55,29 +52,30 @@ Board::block** Board::allocate_board  (int w, int h)
 
 Board::Board (const Board &b) 
 {
-    board_ = NULL;
+    //board_ = NULL;
     *this  = b;
 }
 
 const Board &Board::operator  = (const Board &b)
 {
-    DBGP;
-    board_ = deallocate_board (board_, width_);
-    board_ = allocate_board   (b.width_, b.height_);
+    board_  = deallocate_board (board_, width_);
+    board_  = allocate_board   (b.width_, b.height_);
+    initialize_edges (board_,b.width_,b.height_);
     width_  = b.width_;
     height_ = b.height_;
-    initialize_edges(board_,b.width_,b.height_);
-    set_power  (b.power_); 
-    set_padding(b.padding_);
+    
     concat (board_, b.board_, width_, height_);
-    return *this;
+    
+    set_block_width(b.block_width_);
+    set_power  (b.power_);
+    set_lock   (false);
+    return *this += b;
 }
 
 const Board &Board::operator += (const Board &b)
 {
     int width  = width_;
     int height = height_;
-     
     if   (b.width_  < width ) width  = b.width_ ; 
     if   (b.height_ < height) height = b.height_; 
     concat(board_,b.board_,width,height);
@@ -87,21 +85,9 @@ const Board &Board::operator += (const Board &b)
 Board::~Board()
 {
     if (board_ == NULL) return;
-    for (int i = 0; i < width_; ++i)
+    for (int i = 0; i < width_+2; ++i)
         delete [] board_[i];
     delete [] board_;
-}
-
-std::ostream & operator << 
-(std::ostream &o, const Board& brd)
-{
-    for (int j = brd.height_-1; j >= 0; --j) {
-        for (int i = 0; i < brd.width_; ++i) {
-            o << brd.board_[i+1][j+1];
-        }
-        o << std::endl;
-    }
-    return o;
 }
 
 int Board::num_empty()
@@ -141,8 +127,20 @@ const bool   Board::block::operator!= (const int value)
     return value == value_;
 }
 
-bool Board::block::moveto (block &blk, bool &moved)
+void Board::ensure_fitting() 
 {
+    int wid = std::to_string(power_op(highest_value_,power_)).length() + 2;
+    if (wid > min_block_width_) {
+        set_block_width(wid);
+    } else {
+        set_block_width(min_block_width_);
+    }
+}
+
+bool Board::block::moveto (block &blk, 
+        bool &moved, Score &score, Board& brd)
+{
+    int wid;
     if (value_ == 0 || blk.lock_ ||
         blk.value_ == EDGE) {
         // doing nothing to the block
@@ -157,6 +155,11 @@ bool Board::block::moveto (block &blk, bool &moved)
         // Combining two blocks
         blk.lock_   = true;
         blk.value_ += 1;
+        score += blk.value_;
+        if (blk.value_ > brd.highest_value_) {
+            brd.highest_value_ = blk.value_;
+            brd.ensure_fitting();
+        }
         value_      = 0;
         moved       = true;
         return false;
@@ -164,25 +167,7 @@ bool Board::block::moveto (block &blk, bool &moved)
     return false;
 }
 
-std::ostream & operator <<
-(std::ostream &o, const Board::block& blk)
-{
-    int padding, i;
-    int pwr = power_op(blk.value_,blk.power_);
-    padding = deci_leng(pwr); 
-       
-    if (blk.value_ == 0) {
-        o << "\033[40;7;10m" << "--X--" << "\033[0m";
-    } else {
-        o << "\033["<< ((blk.value_-1)%6 + 31) << ";7";
-        if (((blk.value_)/7 )%2 == 1) o << ";2";
-        if (((blk.value_)/14)%2 == 1) o << ";1";
-        o << "m";
-        for (i = 0; i < 5-padding; ++i) o << " ";
-        o << pwr << "\033[40;0m";
-    } 
-    return o;
-}
+
 
 /* * * * * *
  *  Small helper functions
@@ -216,6 +201,7 @@ int power_op (const int val, const int pow)
 void Board::set_power  (int  pwr)
 {
     power_ = pwr;
+    ensure_fitting();
     for (int j = 0; j < height_; ++j) 
         for (int i = 0; i < width_; ++i)
             board_[i+1][j+1].power_ = pwr;
@@ -223,6 +209,7 @@ void Board::set_power  (int  pwr)
 
 void Board::set_value  (int  value)
 {
+    highest_value_ = value;
     for (int j = 0; j < height_; ++j) 
         for (int i = 0; i < width_; ++i)
             board_[i+1][j+1].value_ = value;
@@ -235,17 +222,17 @@ void Board::set_lock   (bool lock)
             board_[i+1][j+1].lock_ = lock;
 }
 
-void Board::set_padding(int  padding)
+void Board::set_block_width(int  block_width)
 {
-    padding_ = padding;
+    block_width_ = block_width;
     for (int j = 0; j < height_; ++j) 
         for (int i = 0; i < width_; ++i)
-            board_[i+1][j+1].padding_ = padding;
+            board_[i+1][j+1].block_width_ = block_width;
 }
 
 //// MOVEMENT FUNCTIONS
 
-bool Board::move_down ()
+bool Board::move_down (Score &score)
 {
     int row;
     bool moved = false;
@@ -253,14 +240,14 @@ bool Board::move_down ()
     for (int col  = 0; col  < width_ ; ++col)
     for (int wave = 0; wave < height_; ++wave) {
         row = wave;
-        while (board_[col+1][row+1].moveto(board_[col+1][row],moved)) {
+        while (board_[col+1][row+1].moveto(board_[col+1][row],moved,score,*this)) {
             --row;
         } 
     }
     return moved;
 }
 
-bool Board::move_up   ()
+bool Board::move_up   (Score &score)
 {
     int row;
     bool moved = false;
@@ -268,14 +255,14 @@ bool Board::move_up   ()
     for (int col  = 0; col < width_; ++col)
     for (int wave = height_-1; wave >= 0; --wave) {
         row = wave;
-        while (board_[col+1][row+1].moveto(board_[col+1][row+2],moved)) {
+        while (board_[col+1][row+1].moveto(board_[col+1][row+2],moved,score,*this)) {
             ++row;
         } 
     }
     return moved;
 }
 
-bool Board::move_left ()
+bool Board::move_left (Score &score)
 {
     int  col;
     bool moved = false;
@@ -283,14 +270,14 @@ bool Board::move_left ()
     for (int row  = 0; row  < height_; ++row)
     for (int wave = 0; wave < width_; ++wave) {
         col = wave;
-        while (board_[col+1][row+1].moveto(board_[col][row+1],moved)) {
+        while (board_[col+1][row+1].moveto(board_[col][row+1],moved,score,*this)) {
             --col;
         } 
     }
     return moved;
 }
 
-bool Board::move_right ()
+bool Board::move_right (Score &score)
 {
     int  col;
     bool moved = false;
@@ -298,19 +285,29 @@ bool Board::move_right ()
     for (int row  = 0; row < height_; ++row)
     for (int wave = width_-1; wave >= 0; wave--) {
         col = wave;
-        while (board_[col+1][row+1].moveto(board_[col+2][row+1],moved)) {
+        while (board_[col+1][row+1].moveto(board_[col+2][row+1],moved,score,*this)) {
             ++col;
         } 
     }
     return moved;
 }
 
-void Board::concat (Board::block **dest, Board::block **src, int w, int h)
+
+Board::block& Board::nth_empty (int n)
+{
+    for (int col = 0; col < width_; ++col)
+        for (int row = 0; row < height_; ++row)
+            if (board_[col+1][row+1].value_ == 0)
+                if (n-- == 0) return board_[col+1][row+1];
+                    
+}
+
+int Board::concat (Board::block **dest, Board::block **src, int w, int h)
 {
     for (int c = 0; c < w; ++c) {
-      for (int r = 0; r < h; ++r) {
-        dest[c+1][r+1] += src[c+1][r+1]; 
-      }
+        for (int r = 0; r < h; ++r) {
+            dest[c+1][r+1] += src[c+1][r+1]; 
+        }
     } 
 }
 
@@ -323,24 +320,6 @@ void Board::initialize_edges(Board::block** brd, int w, int h)
     for (int i = 0; i < h; ++i) brd[w-1][i] = EDGE;
 }
 
-
-bool Board::addRandom ()
-{
-    int num_empty_ = num_empty();
-    int rand_choice, col, row;
-    if (num_empty_ == 0) {
-       return false; 
-    } else {
-        rand_choice = rand() % num_empty_;
-        for (col = 0; col < width_; ++col)
-            for (row = 0; row < height_; ++row)
-                if (board_[col+1][row+1].value_ == 0)
-                if (rand_choice-- == 0) 
-                    board_[col+1][row+1] = chooseRandom(probs);
-         return true; 
-    }
-}
-
 Board::block** Board::deallocate_board (Board::block** brd, int w)
 {
     if (brd == NULL) return NULL;
@@ -351,9 +330,7 @@ Board::block** Board::deallocate_board (Board::block** brd, int w)
     return NULL;
 }
 
-
 /*
-
 Board::block** Board::delete_board(Board::block **board, int width)
 {
     for (int i = 0; i < width+2; ++i)
@@ -400,3 +377,51 @@ Board::block** Board::new_board_copy (Board::block **board, int width, int heigh
 }
 */
 
+std::ostream & operator << 
+(std::ostream &o, const Board& brd)
+{
+    for (int j = brd.height_-1; j >= 0; --j) {
+        o << "|"; 
+        for (int i = 0; i < brd.width_; ++i) {
+            o << brd.board_[i+1][j+1];
+        }
+        o << "|" << std::endl;
+    }
+    return o;
+}
+
+std::string centered_string(const std::string &centered, int width, const char padding)
+{
+    std::string a = "";
+    int padd,i,len = centered.length();
+    padd  = (width - len) >> 1;
+    padd += (width - len) &  1;
+    for (i = 0; i < padd; ++i) {a += padding;}
+    a += centered;
+    padd -= (width - len) &  1;
+    for (i = 0; i < padd; ++i) {a += padding;}
+    return a; 
+}
+
+std::ostream & operator <<
+(std::ostream &o, const Board::block& blk)
+{
+    int pwr   = power_op(blk.value_,blk.power_);
+    std::string inner_val;
+
+    if (blk.value_ == 0) {
+        inner_val = "X";
+        o << "\033[40;7;10m";
+        o << centered_string(inner_val,blk.block_width_,'-');
+        o << "\033[0m";
+    } else {
+        inner_val = std::to_string(pwr);
+        o << "\033["<< ((blk.value_-1)%6 + 31) << ";7";
+        if (((blk.value_)/7 )%2 == 1) o << ";2";
+        if (((blk.value_)/14)%2 == 1) o << ";1";
+        o << "m";
+        o << centered_string(inner_val,blk.block_width_,' ');
+        o << "\033[40;0m";
+    } 
+    return o;
+}
