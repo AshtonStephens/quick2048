@@ -21,14 +21,23 @@ void Score::set_power (int power)
     }
 }
 
-int Score::get_value ()
+std::string Score::get_string ()
 {
-    
     if (updated_) {
         updated_ = false;
         value_   = calculated_score();
+        str_ = std::to_string(value_);
     } 
+    return str_; 
+}
 
+int Score::get_value ()
+{
+    if (updated_) {
+        updated_ = false;
+        value_   = calculated_score();
+        str_ = std::to_string(value_);
+    } 
     return value_;
 }
 

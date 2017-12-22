@@ -13,6 +13,7 @@ public:
     ~Score();
     void operator += (int); 
     int  get_value ();
+    std::string get_string ();
     void set_power (int power);
 private:
     std::vector <int> score_vector_;
@@ -20,6 +21,7 @@ private:
     bool updated_;
     int power_;
     int value_;
+    std::string str_;
 };
 
 #endif
