@@ -21,7 +21,6 @@
 #define DBGP std::cerr << \
     "debug(" << __func__ << \
     "["<<__LINE__<< "])" << std::endl;
-//    std::endl << *this << std::endl
 
 int deci_leng(int num);
 int power_op (const int val, const int pow);
