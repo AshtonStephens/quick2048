@@ -4,8 +4,9 @@
  * implementation for the board data abstraction 
  * for implementing 2048 game.
  *
- * By: Ashton Stephens
- * Date: 12/18/17
+ * by: Ashton Stephens
+ * date: 12-18-17
+ * documented: 3-23-19
  *
  */
 
@@ -311,6 +312,8 @@ int Board::concat (Board::block **dest, Board::block **src, int w, int h)
             dest[c+1][r+1] += src[c+1][r+1]; 
         }
     } 
+
+    return 0;
 }
 
 void Board::initialize_edges(Board::block** brd, int w, int h) 

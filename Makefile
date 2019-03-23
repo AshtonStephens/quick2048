@@ -1,14 +1,14 @@
- #Makefile
+# Makefile
 #
-# Purpose: to compile autonomous flight program
-# By: Ashton Stephens
-# Date : 08/10/17
+# Repurposed from compiling an autonomous drone to compiling
+# a game of 2048 with absurd bells and whistles.
+#
+# by: Ashton Stephens
+# date : 08-10-17
+# documented : 03-23-19
 #
 
 IDIRS	  = ./
-SERIAL_RX = FRSKY_TELEM
-SERIAL_TX = SEND7 
-
 
 # # # # # # # # # # # # # # # # 
 # This is where you keep your .h files
@@ -21,27 +21,21 @@ DBFLAGS = -g -DDEBUG
 LDLIBS  = -lrt -lpthread -ldl
 RM_OBJS = && rm *.o
 
-PROTOCALLS = $(SERIAL_RX) $(SERIAL_TX)
-DEF_FLAGS = $(patsubst %,-D%,$(PROTOCALLS))
-
 %.o: %.c
-	$(CC) $(DEF_FLAGS) $(CFLAGS) -c -o $@ $<
+	$(CC) $(CFLAGS) -c -o $@ $<
 
 %.o.test: %.c
-	$(CC) $(DEF_FLAGS) $(DBFLAGS) $(CFLAGS) -c -o $*.o $<
+	$(CC) $(DBFLAGS) $(CFLAGS) -c -o $*.o $<
 
 %.o.shared: %.c
-	$(CC) $(DEF_FLAGS) $(CFLAGS) -c -fPIC -o $@ $<
-	
-%.so: %.o.shared
-	$(CC) $< -shared -o $@ -ldl
+	$(CC) $(CFLAGS) -c -fPIC -o $@ $<
 
 # # # # # # # # # # # # # # # # 
 # stuff you might have to change 
 # 	|	|	|
 # 	V	V	V
 
-all: 2048
+all: 2048 #main
 
 EXECUTABLES = 2048 main
 

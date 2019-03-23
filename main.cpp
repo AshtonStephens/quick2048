@@ -1,3 +1,14 @@
+/* 
+ * main.cpp
+ *
+ * main game program. Stores the board and reacts to input from the
+ * terminal.
+ * 
+ * by: Ashton Stephens
+ * date: 12-20-17
+ * documented: 3-23-19
+ *
+ */
 
 #include <stdlib.h>
 #include "game.h"

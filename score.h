@@ -4,8 +4,9 @@
  * Interface for the score. Handles calculating of score for different
  * power systems.
  * 
- * edited 3-23-19
  * by: Ashton Stephens
+ * date: 12-18-17
+ * documented: 3-23-19
  *
  */
 

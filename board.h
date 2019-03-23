@@ -4,8 +4,9 @@
  * headerfile for the board data abstraction 
  * for implementing 2048 game.
  *
- * By: Ashton Stephens
- * Date: 12/18/17
+ * by: Ashton Stephens
+ * date: 12-18-17
+ * documented: 3-23-19
  *
  */
 

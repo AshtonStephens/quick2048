@@ -1,10 +1,23 @@
-
+/* 
+ * game.cpp
+ *
+ * implementation of 2048 game to output board and update the game
+ * with each movement.
+ * 
+ * by: Ashton Stephens
+ * date: 12-20-17
+ * documented: 3-23-19
+ *
+ * */
 
 #include "game.h"
 
 template <int N>
 int chooseRandom(const int (&t)[N])
 { return t[rand() % N]; }
+
+// allows for easy population of the probabilities
+// of different powers populating the board on a move
 const int probs[] = {1,1,1,1,1,1,1,1,1,2};
 
 const Game & Game::operator= (const Game & g)
@@ -143,8 +156,12 @@ std::string Game::score_line()
     
     std::string line = "";
 
+    // Decides how much of the score to print out given how many
+    // characters long the board is. (Probably more hard-coded than
+    // it should be)
     if ((left = game_width - my_sd_len - my_sn_len  
                     - hi_sd_len - hi_sn_len - 1) >= 0) {
+        // display full score along with best score
         line += my_color;
         if (winning_) line += "\033[1m";
         line += my_sd + my_sn;
@@ -167,16 +184,20 @@ std::string Game::score_line()
         return line;
     } else if ((left = game_width - my_sd_len 
             - my_sn_len) >= 0) { 
+        // show full score
         line += my_color;
         if (winning_) line += "\033[1m";
         line += my_sd + my_sn;
         line += "\033[0m";
     } else if ((left = game_width - my_sn_len) >= 0) { 
+        // just show score number
         line += my_color;
         if (winning_) line += "\033[1m";
         line += my_sn;
         line += "\033[0m";
+
     } else if ((left = game_width - 1) >=0 ) {    
+        // I think you only get here if something has gone wrong
         line += my_color;
         if (winning_) line += "\033[1m";
         line += "!";

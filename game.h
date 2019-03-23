@@ -4,10 +4,11 @@
  * holds the game board and information and displays in a
  * nice way.
  *
- * By: AshtonStephens
- * Date: 12/20/17
+ * by: AshtonStephens
+ * date: 12-20-17
+ * edited : 3-23-19
  *
- */
+ * */
 
 #ifndef GAME_H
 #define GAME_H
