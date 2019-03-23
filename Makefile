@@ -41,22 +41,22 @@ DEF_FLAGS = $(patsubst %,-D%,$(PROTOCALLS))
 # 	|	|	|
 # 	V	V	V
 
-all: main #game
+all: 2048
 
-EXECUTABLES = main #game
+EXECUTABLES = 2048 main
 
 MAIN_INCLUDES  = main.o score.o board.o  game.o
-#GAME_INCLUDES  = game.o board.o
+2048_INCLUDES  = main.o score.o board.o  game.o
 
 main: $(MAIN_INCLUDES)
 	$(CC) $(LDFLAGS) -o $@ $^ $(LDLIBS) $(RM_OBJS) 
 main_test: $(patsubst %,%.test,$(MAIN_INCLUDES))
 	$(CC) $(LDFLAGS) -o $@ $(MAIN_INCLUDES) $(LDLIBS) $(RM_OBJS)
 
-game: $(GAME_INCLUDES)
+2048: $(2048_INCLUDES)
 	$(CC) $(LDFLAGS) -o $@ $^ $(LDLIBS) $(RM_OBJS) 
-game_test: $(patsubst %,%.test,$(GAME_INCLUDES))
-	$(CC) $(LDFLAGS) -o $@ $(GAME_INCLUDES) $(LDLIBS) $(RM_OBJS)
+2048_test: $(patsubst %,%.test,$(2048_INCLUDES))
+	$(CC) $(LDFLAGS) -o $@ $(2048_INCLUDES) $(LDLIBS) $(RM_OBJS)
 
 clean: 
 	rm *~ *.swp *.o $(EXECUTABLES) 2> /dev/null; true

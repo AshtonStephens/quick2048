@@ -365,7 +365,7 @@ std::ostream & operator <<
         o << "\033[0m";
     } else {
         inner_val = std::to_string(pwr);
-        o << "\033["<< ((blk.value_-1)%6 + 31) << ";7"; 
+        o << "\033["<< ((blk.value_-1)%6 + 41) << ";30"; 
         if (blk.new_) o << ";4";
         if (((blk.value_)/7 )%2 == 1) o << ";2";
         if (((blk.value_)/14)%2 == 1) o << ";1";
