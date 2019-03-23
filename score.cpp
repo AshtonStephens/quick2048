@@ -1,4 +1,13 @@
-
+/*
+ * score.cpp
+ *
+ * Implementation of the score. Handles calculating of score for different
+ * power systems.
+ * 
+ * edited 3-23-19
+ * by: Ashton Stephens
+ *
+ */
 
 #include "score.h"
 
@@ -6,13 +15,15 @@ Score::~Score()
 {
 }
 
+// adds the index created to the score vector
 void Score::operator += (int index)
 {
+    // Increase the size of the score vector if the index doesn't
     while (score_vector_.size() <= index) score_vector_.push_back(0);
     score_vector_.at(index) += 1;
     updated_ = true;
 }
-    
+
 void Score::set_power (int power)
 {
     if (power != power_) {
@@ -59,5 +70,4 @@ int Score::calculated_score ()
     }
     return calc_score;
 }
-
 
