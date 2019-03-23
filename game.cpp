@@ -83,8 +83,12 @@ bool Game::over ()
     Board gb;
     Score s;
     if (gb_.num_empty() == 0) {
+        
         gb = gb_;
-        if ( !gb.move_up(s) && !gb.move_left(s)) {
+
+        // TODO: better method for checking if there's a zero
+        if ( gb_.width_ == 0 || gb_.height_ == 0 ||
+            !gb.move_up(s) && !gb.move_left(s)) {
             return true;
         }
     }  
