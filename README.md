@@ -94,8 +94,29 @@ To quickly explain the above code - the variable ingeniously named
 the terminal. Here, we normally subtract the ascii encoding for 0
 because the 0-9 are encoded as the ascii numbers 48 - 57 respectively
 to get out the actual number 0-9 that the user intended. We're now
-negating that number because surely that nonsense will break the thing right? 
+negating that number because we want to set the base to be the
+negative version of the number the user intended. 
 
 ![resizing demo](readme/negative.gif)
 
-Apparently not! Notice that the score will actually go down when merging two numbers and producing a negative number. 
+Apparently this works perfectly! Notice that the score will actually
+go down when merging two numbers and producing a negative number. 
+
+## Controls
+
+game mode: 
+- '0'-'9' --- set the base system of the game
+- 'w' --- move game pieces up
+- 'a' --- move game pieces left
+- 's' --- move game pieces down
+- 'd' --- move game pieces right
+- 'r' --- switch to resizing mode
+- 'q' --- quit
+
+resizing mode:
+- 'w' --- increase height of the board
+- 'a' --- decrease width of the board
+- 's' --- decrease height of the board
+- 'd' --- increase width of the board
+- 'r' --- switch to game mode
+- 'q' --- quit
