@@ -14,6 +14,25 @@ far I could take the assignment. And then I took it too far.
 
 ![totally excessive demo](readme/absurd.gif)
 
+## Controls
+
+game mode: 
+- '0'-'9' --- set the base system of the game
+- 'w' --- move game pieces up
+- 'a' --- move game pieces left
+- 's' --- move game pieces down
+- 'd' --- move game pieces right
+- 'r' --- switch to resizing mode
+- 'q' --- quit
+
+resizing mode:
+- 'w' --- increase height of the board
+- 'a' --- decrease width of the board
+- 's' --- decrease height of the board
+- 'd' --- increase width of the board
+- 'r' --- switch to game mode
+- 'q' --- quit
+
 # Features
 
 ## Normal Features
@@ -101,22 +120,3 @@ negative version of the number the user intended.
 
 Apparently this works perfectly! Notice that the score will actually
 go down when merging two numbers and producing a negative number. 
-
-## Controls
-
-game mode: 
-- '0'-'9' --- set the base system of the game
-- 'w' --- move game pieces up
-- 'a' --- move game pieces left
-- 's' --- move game pieces down
-- 'd' --- move game pieces right
-- 'r' --- switch to resizing mode
-- 'q' --- quit
-
-resizing mode:
-- 'w' --- increase height of the board
-- 'a' --- decrease width of the board
-- 's' --- decrease height of the board
-- 'd' --- increase width of the board
-- 'r' --- switch to game mode
-- 'q' --- quit
